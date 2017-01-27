@@ -38,6 +38,9 @@ def _configure_index():
 
     mapping_body = {
         'properties': {
+            'page_link': {
+                'type': 'text',
+            },
             'title': {
                 'type': 'text',
             },
@@ -102,6 +105,7 @@ def _get_insert_actions():
                 '_index': INDEX_NAME,
                 '_type': DOC_TYPE,
                 '_source': {
+                    'page_link': document_json['page_link'],
                     'title': document_json['title'],
                     'analyzed_title': analyze(document_json['title']),
                     'introduction': document_json['introduction'],

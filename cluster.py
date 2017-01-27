@@ -13,7 +13,6 @@ def _get_documents_and_features():
         'texts': [],
         'vectors': [],
     }
-    features = set()
     for document in scan(ES, query={'query': {'match_all': {}}}, index=INDEX_NAME, doc_type=DOC_TYPE):
         documents['ids'].append(document['_id'])
 
@@ -22,13 +21,10 @@ def _get_documents_and_features():
             document['_source']['analyzed_content']
         documents['texts'].append(text)
 
-        for token in document['_source']['analyzed_title'].split() + document['_source']['analyzed_introduction'].split():
-            features.add(token)
-
     vectorizer = TfidfVectorizer(analyzer='word', min_df=0)
     documents['vectors'] = vectorizer.fit_transform(documents['texts'])
 
-    return documents, list(features)
+    return documents, vectorizer.get_feature_names()
 
 
 def _get_k(k_limit, documents):

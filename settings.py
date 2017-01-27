@@ -4,8 +4,6 @@ import sys
 from elasticsearch import Elasticsearch
 
 
-OUT_DEGREE = 10
-MAX_PAGES = 100
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 PAGES_DIR = os.path.join(BASE_DIR, 'pages')
 

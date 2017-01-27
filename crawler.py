@@ -7,7 +7,7 @@ from urllib.parse import urljoin, urlparse
 import urllib3
 from bs4 import BeautifulSoup
 
-from settings import OUT_DEGREE, MAX_PAGES, PAGES_DIR
+from settings import PAGES_DIR
 
 
 urllib3.disable_warnings()  # InsecureRequestWarning
@@ -50,7 +50,7 @@ class Page:
     def __init__(self, link):
         self.link = link
 
-        self.data = {}
+        self.data = {'page_link': link}
         page_source = Page._get_page_source(link)
         page_soup = BeautifulSoup(page_source, 'html.parser')
 
@@ -90,25 +90,28 @@ class Page:
         return self.data
 
 
-def _update_progress(count):
-    sys.stdout.write('\r[%d/%d]' % (count, MAX_PAGES))
+def _update_progress(count, max):
+    sys.stdout.write('\r[%d/%d]' % (count, max))
     sys.stdout.flush()
 
 
-def crawl(*input_pages):
+def crawl(out_degree, max_pages, *input_pages):
+    out_degree = int(out_degree)
+    max_pages = int(max_pages)
+
     queue = list(deepcopy(input_pages))
     index = 0
     crawled_page_objects = list()
     crawled_page_urls = set()
-    _update_progress(0)
-    while len(crawled_page_urls) < MAX_PAGES and index < len(queue):
+    _update_progress(0, max_pages)
+    while len(crawled_page_urls) < max_pages and index < len(queue):
         page_url = queue[index]
         if page_url not in crawled_page_urls:
             page = Page(page_url)
             crawled_page_objects.append(page)
-            queue += page.crawlable_urls()[:OUT_DEGREE]
+            queue += page.crawlable_urls()[:out_degree]
             crawled_page_urls.add(page_url)
-            _update_progress(len(crawled_page_urls))
+            _update_progress(len(crawled_page_urls), max_pages)
         index += 1
     print()  # newline after progress bar
     for i, page in enumerate(crawled_page_objects):
