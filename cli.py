@@ -2,6 +2,7 @@ import sys
 
 from crawler import crawl
 from index import create_index, delete_index, check_index
+from cluster import cluster
 
 
 methods = {
@@ -9,6 +10,7 @@ methods = {
     'create_index': create_index,
     'delete_index': delete_index,
     'check_index': check_index,
+    'cluster': cluster,
 }
 
 

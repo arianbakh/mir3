@@ -9,6 +9,7 @@
 1. bs4==0.0.1
 2. urllib3==1.19.1
 3. elasticsearch==5.0.1
+4. scikit-learn==0.18.1
 
 ## Elasticsearch
 
@@ -23,5 +24,5 @@
 
 # TODO
 
-1- crawl infobox
-2- ignore text inside brackets
+1. crawl infobox
+2. ignore text inside brackets

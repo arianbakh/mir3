@@ -1,5 +1,7 @@
 import json
 import os
+import random
+from pprint import pprint
 from time import sleep
 
 from elasticsearch.helpers import bulk
@@ -64,6 +66,16 @@ def _configure_index():
                     },
                 },
             },
+            'cluster': {
+                'properties': {
+                    'id': {
+                        'type': 'integer',
+                    },
+                    'label': {
+                        'type': 'text',
+                    },
+                },
+            },
         },
     }
 
@@ -84,6 +96,7 @@ def _get_insert_actions():
     for index_file_path in index_file_paths:
         with open(index_file_path, 'r') as index_file:
             document_json = json.loads(index_file.read())
+            content = ' '.join(document_json['content'])
             yield {
                 '_op_type': 'index',
                 '_index': INDEX_NAME,
@@ -93,8 +106,8 @@ def _get_insert_actions():
                     'analyzed_title': analyze(document_json['title']),
                     'introduction': document_json['introduction'],
                     'analyzed_introduction': analyze(document_json['introduction']),
-                    'content': document_json['content'],
-                    'analyzed_content': analyze(document_json['content']),
+                    'content': content,
+                    'analyzed_content': analyze(content),
                     'links': document_json['links'],
                 }
             }
@@ -115,4 +128,14 @@ def delete_index():
 
 
 def check_index():
-    print(ES.cat.indices(index=INDEX_NAME, v=True))
+    search_body = {
+        'query': {
+            'match_all': {},
+        }
+    }
+    hits = ES.search(index=INDEX_NAME, body=search_body)['hits']['hits']
+    truncated_doc_source = random.choice(hits)['_source']
+    for field in ['introduction', 'analyzed_introduction', 'content', 'analyzed_content']:
+        truncated_doc_source[field] = ['...']
+    truncated_doc_source['links'] = [truncated_doc_source['links'][0], '...']
+    pprint(truncated_doc_source)
