@@ -1,6 +1,5 @@
 import json
 import os
-import re
 import sys
 from copy import deepcopy
 from urllib.parse import urljoin, urlparse
@@ -8,7 +7,7 @@ from urllib.parse import urljoin, urlparse
 import urllib3
 from bs4 import BeautifulSoup
 
-from settings import OUT_DEGREE, MAX_PAGES, OUTPUT_DIR
+from settings import OUT_DEGREE, MAX_PAGES, PAGES_DIR
 
 
 urllib3.disable_warnings()  # InsecureRequestWarning
@@ -38,11 +37,11 @@ class Page:
         if not url or url.startswith('#') or ':' in url:
             return None
 
-        if Page._is_absolute(url):
-            if 'fa.wikipedia.org/wiki' not in url:
-                return None
-        else:
+        if not Page._is_absolute(url):
             url = urljoin(self.link, url)
+
+        if 'fa.wikipedia.org/wiki' not in url:
+            return None
 
         url = Page._remove_parameters(url)
 
@@ -113,5 +112,5 @@ def crawl(*input_pages):
         index += 1
     print()  # newline after progress bar
     for i, page in enumerate(crawled_page_objects):
-        with open(os.path.join(OUTPUT_DIR, '%d.json' % i), 'w') as output_file:
-            output_file.write('%s\n' % json.dumps(page.json()))
+        with open(os.path.join(PAGES_DIR, '%d.json' % i), 'w') as output_file:
+            output_file.write('%s' % json.dumps(page.json()))
