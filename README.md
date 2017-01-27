@@ -24,5 +24,4 @@
 
 # TODO
 
-1. crawl infobox
-2. ignore text inside brackets
+1. check the cli is exactly as described
