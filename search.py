@@ -2,7 +2,8 @@ from analysis import analyze
 from settings import ES, INDEX_NAME
 
 
-def search(query, title_weight, introduction_weight, content_weight, cluster_id):
+def search(query, title_weight, introduction_weight, content_weight,
+           cluster_id):
     title_weight = float(title_weight)
     introduction_weight = float(introduction_weight)
     content_weight = float(content_weight)
@@ -17,7 +18,8 @@ def search(query, title_weight, introduction_weight, content_weight, cluster_id)
                             'query': analyze(query),
                             'fields': [
                                 'analyzed_title^%f' % title_weight,
-                                'analyzed_introduction^%f' % introduction_weight,
+                                'analyzed_introduction^%f' %
+                                introduction_weight,
                                 'analyzed_content^%f' % content_weight,
                             ],
                         },
@@ -34,8 +36,8 @@ def search(query, title_weight, introduction_weight, content_weight, cluster_id)
         })
     hits = ES.search(index=INDEX_NAME, body=search_body)['hits']['hits']
     for hit in hits:
-        print('##########')
         print('id:', hit['_id'])
         print('link:', hit['_source']['page_link'])
         print('title:', hit['_source']['title'])
         print('cluster_id:', hit['_source']['cluster.id'])
+        print()

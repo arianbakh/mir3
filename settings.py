@@ -5,7 +5,7 @@ from elasticsearch import Elasticsearch
 
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-PAGES_DIR = os.path.join(BASE_DIR, 'pages')
+DEFAULT_PAGES_DIR = os.path.join(BASE_DIR, 'pages')
 
 
 ES_HOST = 'localhost'

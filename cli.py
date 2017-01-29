@@ -4,6 +4,7 @@ import argparse
 from cluster import cluster
 from crawler import crawl
 from index import create_index, delete_index
+from settings import DEFAULT_PAGES_DIR
 from search import search
 
 
@@ -12,14 +13,14 @@ def handle_default(args):
 
 
 def handle_crawl(args):
-    crawl(args.out_degree, args.num_pages, args.urls)
+    crawl(args.out_degree, args.num_pages, args.urls, args.json_directory)
 
 
 def handle_index(args):
     if args.delete_index:
         delete_index()
     else:
-        create_index()
+        create_index(args.json_directory)
 
 
 def handle_cluster(args):
@@ -41,11 +42,17 @@ def add_crawl_parser(subparsers):
                         help="maximum out-degree of pages")
     parser.add_argument('-p', '--num-pages', default=1000, type=int,
                         help="maximum number of pages to crawl")
+    parser.add_argument('-j', '--json-directory', default=DEFAULT_PAGES_DIR,
+                        help="Directory to store wikipedia pages data as "
+                             "json files")
     parser.set_defaults(handle=handle_crawl)
 
 
 def add_index_parser(subparsers):
     parser = subparsers.add_parser('index', description="Handle indexing")
+    parser.add_argument('-j', '--json-directory', default=DEFAULT_PAGES_DIR,
+                        help="Directory to read wikipedia pages data json "
+                             "files from")
     parser.add_argument('-d', '--delete-index', action='store_true',
                         help="Delete index")
     parser.set_defaults(handle=handle_index)

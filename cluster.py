@@ -13,7 +13,8 @@ def _get_documents_and_features():
         'texts': [],
         'vectors': [],
     }
-    for document in scan(ES, query={'query': {'match_all': {}}}, index=INDEX_NAME, doc_type=DOC_TYPE):
+    for document in scan(ES, query={'query': {'match_all': {}}},
+                         index=INDEX_NAME, doc_type=DOC_TYPE):
         documents['ids'].append(document['_id'])
 
         text = document['_source']['analyzed_title'] + ' ' + \
@@ -40,7 +41,8 @@ def _get_k(k_limit, documents):
         inertia_average = inertia_sum / K_MEANS_RETRY
         diff = last_inertia_average - inertia_average
 
-        print('k = %d;' % k, 'inertia = %f;' % inertia_average, 'diff = %s' % (str(diff) if diff < 1000000 else 'huge!'))
+        print('k = %d;' % k, 'inertia = %f;' % inertia_average, 'diff = %s' %
+              (str(diff) if diff < 1000000 else 'huge!'))
 
         if diff < K_MEANS_ACCEPTABLE_DIFF:
             break
@@ -77,7 +79,9 @@ def _get_mutual_information(feature, label_id):
                     {
                         'multi_match': {
                             'query': feature,
-                            'fields': ['analyzed_title', 'analyzed_introduction', 'analyzed_content'],
+                            'fields': ['analyzed_title',
+                                       'analyzed_introduction',
+                                       'analyzed_content'],
                         },
                     },
                     {
@@ -96,7 +100,9 @@ def _get_mutual_information(feature, label_id):
                     {
                         'multi_match': {
                             'query': feature,
-                            'fields': ['analyzed_title', 'analyzed_introduction', 'analyzed_content'],
+                            'fields': ['analyzed_title',
+                                       'analyzed_introduction',
+                                       'analyzed_content'],
                         },
                     },
                 ],
@@ -124,7 +130,9 @@ def _get_mutual_information(feature, label_id):
                     {
                         'multi_match': {
                             'query': feature,
-                            'fields': ['analyzed_title', 'analyzed_introduction', 'analyzed_content'],
+                            'fields': ['analyzed_title',
+                                       'analyzed_introduction',
+                                       'analyzed_content'],
                         },
                     },
                 ],
@@ -138,7 +146,9 @@ def _get_mutual_information(feature, label_id):
                     {
                         'multi_match': {
                             'query': feature,
-                            'fields': ['analyzed_title', 'analyzed_introduction', 'analyzed_content'],
+                            'fields': ['analyzed_title',
+                                       'analyzed_introduction',
+                                       'analyzed_content'],
                         },
                     },
                     {
@@ -182,14 +192,17 @@ def _get_cluster_labels(k, features):
     for i in range(k):
         cluster_to_labels[i] = []
         for feature in features:
-            cluster_to_labels[i].append([_get_mutual_information(feature, i), feature])
+            cluster_to_labels[i].append([_get_mutual_information(feature, i),
+                                         feature])
     for cluster_id, possible_cluster_labels in cluster_to_labels.items():
-        labels = [item[1] for item in sorted(possible_cluster_labels, key=lambda x: -x[0])[:5]]
+        labels = [item[1] for item in sorted(possible_cluster_labels,
+                                             key=lambda x: -x[0])[:5]]
         print('cluster_id = %s;' % cluster_id, 'labels = %s;' % str(labels))
 
 
 def cluster(k_limit):
     documents, features = _get_documents_and_features()
     k = _get_k(k_limit, documents)
-    bulk(ES, _get_cluster_update_operations(k, documents), stats_only=False, chunk_size=100)
+    bulk(ES, _get_cluster_update_operations(k, documents), stats_only=False,
+         chunk_size=100)
     _get_cluster_labels(k, features)

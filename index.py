@@ -7,7 +7,7 @@ from time import sleep
 from elasticsearch.helpers import bulk
 
 from analysis import analyze
-from settings import ES, INDEX_NAME, DOC_TYPE, PAGES_DIR
+from settings import ES, INDEX_NAME, DOC_TYPE
 
 
 def _initialize_index():
@@ -87,15 +87,17 @@ def _configure_index():
     ES.indices.close(index=INDEX_NAME)
     ES.indices.put_settings(index=INDEX_NAME, body=settings_body)
     ES.indices.open(index=INDEX_NAME)
-    ES.indices.put_mapping(index=INDEX_NAME, doc_type=DOC_TYPE, body=mapping_body)
+    ES.indices.put_mapping(index=INDEX_NAME, doc_type=DOC_TYPE,
+                           body=mapping_body)
 
 
-def _get_insert_actions():
+def _get_insert_actions(pages_dir):
     index_file_paths = [
-        os.path.join(PAGES_DIR, file_name)
-        for file_name in os.listdir(PAGES_DIR)
-        if os.path.isfile(os.path.join(PAGES_DIR, file_name)) and file_name.endswith('.json')
-    ]
+        os.path.join(pages_dir, file_name)
+        for file_name in os.listdir(pages_dir)
+        if os.path.isfile(os.path.join(pages_dir, file_name)) and
+        file_name.endswith('.json')
+        ]
     for index_file_path in index_file_paths:
         with open(index_file_path, 'r') as index_file:
             document_json = json.loads(index_file.read())
@@ -109,7 +111,8 @@ def _get_insert_actions():
                     'title': document_json['title'],
                     'analyzed_title': analyze(document_json['title']),
                     'introduction': document_json['introduction'],
-                    'analyzed_introduction': analyze(document_json['introduction']),
+                    'analyzed_introduction':
+                        analyze(document_json['introduction']),
                     'content': content,
                     'analyzed_content': analyze(content),
                     'links': document_json['links'],
@@ -117,14 +120,14 @@ def _get_insert_actions():
             }
 
 
-def _bulk_action():
-    bulk(ES, _get_insert_actions(), stats_only=False, chunk_size=50)
+def _bulk_action(pages_dir):
+    bulk(ES, _get_insert_actions(pages_dir), stats_only=False, chunk_size=50)
 
 
-def create_index():
+def create_index(pages_dir):
     _initialize_index()
     _configure_index()
-    _bulk_action()
+    _bulk_action(pages_dir)
 
 
 def delete_index():
@@ -139,7 +142,8 @@ def check_index():
     }
     hits = ES.search(index=INDEX_NAME, body=search_body)['hits']['hits']
     truncated_doc_source = random.choice(hits)['_source']
-    for field in ['introduction', 'analyzed_introduction', 'content', 'analyzed_content']:
+    for field in ['introduction', 'analyzed_introduction', 'content',
+                  'analyzed_content']:
         truncated_doc_source[field] = ['...']
     truncated_doc_source['links'] = [truncated_doc_source['links'][0], '...']
     pprint(truncated_doc_source)

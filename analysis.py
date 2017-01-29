@@ -23,24 +23,34 @@ CHARACTER_REPLACE_DICT = {
     chr(1726): chr(1607),  # ھ -> ه
     chr(233): chr(101),    # e <- é
 }
+
 for i in range(1611, 1618):  # tanvins, short vowels, hamzah, sokun
     CHARACTER_REPLACE_DICT[chr(i)] = ''
-for english_number, persian_number in [(x - 1728, x) for x in range(1776, 1776 + 10)]:  # persian numbers
+
+# persian numbers
+for english_number, persian_number in [(x - 1728, x) for x in
+                                       range(1776, 1776 + 10)]:
     CHARACTER_REPLACE_DICT[chr(persian_number)] = chr(english_number)
-for english_number, persian_number in [(x - 1584, x) for x in range(1632, 1632 + 10)]:  # another set of persian numbers!
+
+# another set of persian numbers!
+for english_number, persian_number in [(x - 1584, x) for x in
+                                       range(1632, 1632 + 10)]:
     CHARACTER_REPLACE_DICT[chr(persian_number)] = chr(english_number)
 
 
 PERSIAN_ALPHABET_CODES = [
-    1575, 1576, 1662, 1578, 1579, 1580, 1670, 1581, 1582, 1583, 1584, 1585, 1586, 1688, 1587, 1588,
-    1589, 1590, 1591, 1592, 1593, 1594, 1601, 1602, 1705, 1711, 1604, 1605, 1606, 1608, 1607, 1740
+    1575, 1576, 1662, 1578, 1579, 1580, 1670, 1581, 1582, 1583, 1584, 1585,
+    1586, 1688, 1587, 1588, 1589, 1590, 1591, 1592, 1593, 1594, 1601, 1602,
+    1705, 1711, 1604, 1605, 1606, 1608, 1607, 1740
 ]
-PERSIAN_NUMBER_CODES = list(range(1776, 1776 + 10)) + list(range(1632, 1632 + 10))
+PERSIAN_NUMBER_CODES = list(range(1776, 1776 + 10)) +\
+                       list(range(1632, 1632 + 10))
 
 
 ENGLISH_SMALL_ALPHABET_CODES = list(range(65, 65 + 26))
 ENGLISH_CAPITAL_ALPHABET_CODES = list(range(97, 97 + 26))
-ENGLISH_ALPHABET_CODES = ENGLISH_SMALL_ALPHABET_CODES + ENGLISH_CAPITAL_ALPHABET_CODES
+ENGLISH_ALPHABET_CODES = ENGLISH_SMALL_ALPHABET_CODES +\
+                         ENGLISH_CAPITAL_ALPHABET_CODES
 ENGLISH_NUMBER_CODES = list(range(48, 48 + 10))
 
 
@@ -93,8 +103,10 @@ def _have_different_language(char_1, char_2):
     language_code_1 = _get_language_code(char_1)
     language_code_2 = _get_language_code(char_2)
 
-    if language_code_1 == LanguageCode.UNKNOWN or language_code_2 == LanguageCode.UNKNOWN:
-        return False  # if either is unknown, we assume it has the same language
+    # if either is unknown, we assume it has the same language
+    if language_code_1 == LanguageCode.UNKNOWN \
+            or language_code_2 == LanguageCode.UNKNOWN:
+        return False
 
     return language_code_1 != language_code_2
 
