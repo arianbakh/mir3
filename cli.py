@@ -1,12 +1,13 @@
+#!/usr/bin/env python
 import sys
 
+from cluster import cluster
 from crawler import crawl
 from index import create_index, delete_index, check_index
-from cluster import cluster
 from search import search
 
 
-methods = {
+__methods = {
     'crawl': crawl,
     'create_index': create_index,
     'delete_index': delete_index,
@@ -16,7 +17,10 @@ methods = {
 }
 
 
-if sys.argv[1] in methods:
-    methods[sys.argv[1]](*sys.argv[2:])
-else:
-    print('Invalid method')
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print("Usage: %s COMMAND" % sys.argv[0])
+    elif sys.argv[1] in __methods:
+        __methods[sys.argv[1]](*sys.argv[2:])
+    else:
+        print("Invalid method: %s" % sys.argv[1])
