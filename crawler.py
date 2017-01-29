@@ -13,7 +13,7 @@ from settings import PAGES_DIR
 urllib3.disable_warnings()  # InsecureRequestWarning
 
 
-class Page:
+class Page():
     @staticmethod
     def _get_page_source(url):
         http = urllib3.PoolManager()
@@ -95,10 +95,7 @@ def _update_progress(count, max):
     sys.stdout.flush()
 
 
-def crawl(out_degree, max_pages, *input_pages):
-    out_degree = int(out_degree)
-    max_pages = int(max_pages)
-
+def crawl(out_degree, max_pages, input_pages):
     queue = list(deepcopy(input_pages))
     index = 0
     crawled_page_objects = list()
